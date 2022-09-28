@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const morgan = require('morgan');
+const mongoose = require('mongoose');
+const Product = require("./modal/ProductSchema");
 const PORT = 3000;
 require('dotenv').config();
 const api = process.env.API_URL;
@@ -8,34 +11,54 @@ const api = process.env.API_URL;
 // MiddleWare
 
 app.use(bodyParser.json());
-
+app.use(morgan('tiny'));
 
 
 // GET API to get all the Products
 
-app.get(`${api}/products`,(req,res)=>{
+app.get(`${api}/products`,async (req,res)=>{
 
-    const product={
-        id:1,
-        name:"Abhishek",
-        image_url:"https://loclahost.com"
-    };
+    const productList = await Product.find();
 
-    res.send({message:'successfull',data:product});
+    if(!productList)
+    {
+        res.status(500).json({success:false})
+    }
+    else
+    {
+        res.status(201).send(productList);
+    }
+
 });
 
 // POST api to Create the Product
 
 app.post(`${api}/products`,(req,res)=>{
 
-    console.log("Hello")
-    const newProduct = req.body;
-    console.log(newProduct);
-    res.send({message:'created Successfully',data:newProduct});
+    
+    const product = new Product({
+        name:req.body.name,
+        image:req.body.image,
+        countInStock:req.body.countInStock
+    });
+    
+    product.save().then((createdProduct)=>{
+        res.status(201).json(createdProduct)
+    }).catch((err)=>{
+        res.status(500).json({
+            error:err,
+            success:failed
+        });
+    });
 
 });
 
 
+mongoose.connect(process.env.CONNECTION_STRING,{
+    dbName:"eshop_database"
+}).then(()=>{
+    console.log("Connection is Ready.......")
+}).catch((err)=>{console.log(err)});
 
 app.listen(PORT,()=>{
     console.log(api);
