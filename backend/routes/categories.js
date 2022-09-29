@@ -39,6 +39,30 @@ router.get('/:id',async (req,res)=>{
     }
 });
 
+// API to UPDATE a Category
+
+router.put("/:id",async (req,res)=>{
+
+    const category = await Category.findByIdAndUpdate(
+        req.params.id,{
+            name:req.body.name,
+            icon:req.body.icon,
+            color:req.body.color
+        },{
+            new:true
+        }
+    )
+
+    if(!category)
+    {
+        res.status(404).json({success:false,message:"The Category witht the given ID is not Found"});
+    }
+    else
+    {
+        res.status(200).send(category);
+    }
+
+});
 
 
 

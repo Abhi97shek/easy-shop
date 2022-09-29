@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 const productScehma = mongoose.Schema({
 
-    title:{
+    name:{
         type:String,
         required:true
     },
