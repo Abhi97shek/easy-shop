@@ -3,8 +3,7 @@ const User = require('../modal/user');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const hashPassword = require("../helpers/hashPassword");
-
-
+const jwt = require('jsonwebtoken'); 
 
 
 // API for Register a User
@@ -43,7 +42,7 @@ router.post("/",async (req,res)=>{
 router.get("/",async (req,res)=>{
 
     const user = await User.find().select("name phone email");
-
+    const secret = PROc
     if(!user)
         {
          return res.status(500).json({success:false});
@@ -70,6 +69,36 @@ router.get("/:id",async (req,res)=>{
     res.status(200).send(user);
 });
 
+// User Login API
+
+router.post("/login",async(req,res)=>{
+
+    const user = await User.findOne({email:req.body.email});
+
+    if(!user)
+        {
+            return res.status(404).send({message:"User Not Found"})
+        }
+
+    if(user && bcrypt.compareSync(req.body.password, user.passwordHash))
+        {
+            const secret = process.env.SECRET;
+            const token = jwt.sign({
+                email:user.email
+            },secret);
+            const data ={
+                email:user.email,
+                token
+            }
+            res.status(200).send({success:true,data:data});
+        }
+        else
+        {
+            res.status(500).send({success:false,message:"User Authenticated Failed"})
+        }
+    
+
+});
 
 
 
