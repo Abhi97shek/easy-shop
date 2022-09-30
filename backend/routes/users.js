@@ -3,6 +3,10 @@ const User = require('../modal/user');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const hashPassword = require("../helpers/hashPassword");
+
+
+
+
 // API for Register a User
 router.post("/",async (req,res)=>{
 
@@ -11,7 +15,6 @@ router.post("/",async (req,res)=>{
         {
             newPassword  = await hashPassword(req.body.password);
         }
-
     let newUser = new User({
         name:req.body.name,
         email:req.body.email,
@@ -34,6 +37,38 @@ router.post("/",async (req,res)=>{
 
 });
 
+// GET list of all User with Name,phone and Email
+
+
+router.get("/",async (req,res)=>{
+
+    const user = await User.find().select("name phone email");
+
+    if(!user)
+        {
+         return res.status(500).json({success:false});
+        }
+
+    res.status(200).send(user);
+
+
+});
+
+
+// Get the User Details
+
+
+router.get("/:id",async (req,res)=>{
+
+    const user = await User.findById(req.params.id).select("-passwordHash");
+
+    if(!user)
+        {
+            return res.status(500).json({success:false,message:"No User Found"});
+        }
+
+    res.status(200).send(user);
+});
 
 
 
