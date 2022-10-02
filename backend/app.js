@@ -4,10 +4,11 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const authJwt = require('./helpers/jwt'); 
+var { expressjwt: jwt } = require("express-jwt");
 const cors = require('cors');
 const PORT = 3000;
 require('dotenv').config();
-
+const secret = process.env.SECRET;
 app.use(cors());
 app.options('*',cors);
 
@@ -17,12 +18,21 @@ const categoryRotes = require('./routes/categories');
 const orderRoutes = require("./routes/orders");
 const userRoutes = require("./routes/users");
 
-
 // MiddleWare
 
 app.use(bodyParser.json());
 app.use(morgan('tiny'));
-app.use(authJwt);
+app.use(jwt({
+    secret,
+    algorithms:['HS256']
+}).unless({
+        path:[
+            {url:`/\/api\/v1\/products(.*)/`,methods:['GET','OPTIONS']},
+            {url:`/\/api\/v1\/categories(.*)/`,methods:['GET','OPTIONS']},
+            `/api/v1/users/login`,
+            `/api/v1/users/register`
+        ]
+}));
 
 const api = process.env.API_URL;
 
