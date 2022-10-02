@@ -1,4 +1,4 @@
-const expressJwt =require('express-jwt');
+import { expressJwt as jwt } from 'express-jwt';
 
 function authJwt(){
 
@@ -17,4 +17,4 @@ function authJwt(){
     });
 };
 
-module.exports = authJwt;
+export default authJwt;

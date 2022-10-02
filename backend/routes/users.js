@@ -84,7 +84,9 @@ router.post("/login",async(req,res)=>{
         {
             const secret = process.env.SECRET;
             const token = jwt.sign({
-                email:user.email
+                email:user.email,
+                UserId:user.id,
+                isAdmin:user.isAdmin
             },  secret,{expiresIn:'1d'});
             const data ={
                 email:user.email,
@@ -101,9 +103,20 @@ router.post("/login",async(req,res)=>{
 });
 
 
+// GET the Count of the User
 
+    router.get('/get/count',async (req,res)=>{
 
+        const user = await User.countDocuments();
 
+        if(!user)
+            {
+                return res.status(500).json({success:false,message:"Internal Server Error"});
+            }
+
+            res.status(201).send({success:true,count:user});
+
+    });
 
 
 

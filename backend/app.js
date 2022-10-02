@@ -3,7 +3,6 @@ const app = express();
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
-const authJwt = require('./helpers/jwt'); 
 var { expressjwt: jwt } = require("express-jwt");
 const cors = require('cors');
 const PORT = 3000;
@@ -24,7 +23,15 @@ app.use(bodyParser.json());
 app.use(morgan('tiny'));
 app.use(jwt({
     secret,
-    algorithms:['HS256']
+    algorithms:['HS256'],
+    isRevoked:async (req,payload)=>
+        {
+            if(!payload.isAdmin)
+                {
+                return false;
+                }
+                return true;
+        }
 }).unless({
         path:[
             {url:`/\/api\/v1\/products(.*)/`,methods:['GET','OPTIONS']},
