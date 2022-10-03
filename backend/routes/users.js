@@ -14,6 +14,7 @@ router.post("/",async (req,res)=>{
         {
             newPassword  = await hashPassword(req.body.password);
         }
+        console.log(newPassword);
     let newUser = new User({
         name:req.body.name,
         email:req.body.email,
@@ -113,11 +114,29 @@ router.post("/login",async(req,res)=>{
             {
                 return res.status(500).json({success:false,message:"Internal Server Error"});
             }
-
             res.status(201).send({success:true,count:user});
 
     });
 
+    // Deteting a User
+
+    router.get("/delete:id",async (req,res)=>{
+
+        User.findByIdAndRemove(req.params.id).then((user)=>{
+            if(user)
+                {
+                    res.status(200).json({success:true,message:'The user is deleted'});
+                }
+                else
+                {
+                    res.status(404).json({success:false,message:"User is not Found"});
+                }
+        }).catch((err)=>{
+            res.status(500).json({success:false,message:"Internal Server Error"});
+        })
+
+
+    });
 
 
 module.exports = router;
