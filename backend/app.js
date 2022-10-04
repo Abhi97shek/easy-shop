@@ -19,6 +19,8 @@ const userRoutes = require("./routes/users");
 
 // MiddleWare
 
+
+
 app.use(bodyParser.json());
 app.use(morgan('tiny'));
 app.use(jwt({
@@ -34,12 +36,15 @@ app.use(jwt({
         }
 }).unless({
         path:[
-            {url:`/\/api\/v1\/products(.*)/`,methods:['GET','OPTIONS']},
-            {url:`/\/api\/v1\/categories(.*)/`,methods:['GET','OPTIONS']},
+            {url:/\/public\/uploads(.*)/,methods:['GET','OPTIONS']},
+            {url:/\/api\/v1\/products(.*)/,methods:['GET','OPTIONS']},
+            {url:/\/api\/v1\/categories(.*)/,methods:['GET','OPTIONS']},
             `/api/v1/users/login`,
             `/api/v1/users/register`
         ]
 }));
+
+app.use('/public/uploads',express.static(__dirname + '/public/uploads'));
 
 const api = process.env.API_URL;
 

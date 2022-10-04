@@ -1,9 +1,7 @@
 const express= require('express');
 const Order = require('../modal/order');
 const OrderItem = require('../modal/orderItem');
-
 const router = express.Router();
-
 
 // Get all the Products
 router.get("/",async (req,res)=>{
@@ -31,7 +29,6 @@ router.get("/:id",async (req,res)=>{
         res.status(200).send(orderList);
 
 });
-
 
 // API to create an Order
 
