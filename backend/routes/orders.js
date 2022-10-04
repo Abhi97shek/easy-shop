@@ -99,6 +99,7 @@ router.post("/", async( req,res)=>{
         Order.findByIdAndRemove(req.params.id).then(async(result)=>{
             if(!result)
                 {
+                    console.log(result)
                   await result.orderItems.map(async (orderItemId)=>{
                         await OrderItem.findByIdAndRemove(orderItemId);
                      })
@@ -111,9 +112,26 @@ router.post("/", async( req,res)=>{
         }).catch((err)=>{
             res.status(500).json({success:false,message:err});
         });
-
-
  });
+
+
+//  Total Sales in Whole E-Shop
+
+router.get("/get/totalsales",async (req,res)=>{
+
+     const totalSales = await Order.aggregate([
+        {
+            $group:{_id:null,totalsales:{$sum:'totalProce'}}
+        }
+     ]);
+     if(!totalSales)
+        {
+         return res.status(404).send('The order sales cannot be generated');
+        }
+res.send({totalsales:totalSales.pop().totalsales});
+
+
+});
 
 
 module.exports = router;

@@ -3,6 +3,24 @@ const Category = require('../modal/category');
 const router = express.Router();
 const Product = require('../modal/ProductSchema');
 const mongoose = require('mongoose');
+const multer = require('multer');
+
+
+// Add the Multer DiskStorage for the Images
+ 
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'public/uploads')
+    },
+    filename: function (req, file, cb) {
+      const filename = file.originalname.split(' ').join('-');
+      cb(null, file.fieldname + '-' + Date.now())
+    }
+  })
+  
+  const upload = multer({ storage: storage })
+
+
 
 // GET API to get all the Products
 
@@ -24,7 +42,7 @@ router.get('/',async (req,res)=>{
 
 // POST api to Create the Product
 
-router.post('/', async (req,res)=>{
+router.post('/', upload.single('image'),async (req,res)=>{
  
     const category  = await Category.findById(req.body.category);
 
@@ -32,12 +50,16 @@ router.post('/', async (req,res)=>{
         {
             return res.status(500).json({success:false,message:"The Category is not valid"})
         }
+    
+        const fileName = req.file.filename;
+        const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+
 
         let product = new Product({
             name:req.body.name,
             description:req.body.description,
             richDescription:req.body.richDescription,
-            image:req.body.image, 
+            image:`${basePath}${fileName}`, 
             brand:req.body.brand, 
             price:req.body.price,
             category:req.body.category,
