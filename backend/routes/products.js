@@ -63,10 +63,15 @@ router.post('/', upload.single('image'),async (req,res)=>{
             return res.status(500).json({success:false,message:"The Category is not valid"})
         }
     
+        const file = req.file;
+
+        if(!file)
+            {
+                return res.status(404).json({success:false,message:"No Image is selected"});
+            }
+
         const fileName = req.file.filename;
         const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
-
-
         let product = new Product({
             name:req.body.name,
             description:req.body.description,
@@ -171,8 +176,6 @@ router.delete('/:id',(req,res)=>{
 
 router.get("/get/count",async (req,res)=>{
 
-    console.log("Hello");
-
     const productCount = await Product.countDocuments();
 
     if(!productCount)
@@ -227,10 +230,40 @@ router.get("/get/filter",async (req,res)=>{
     {
         res.status(200).send(productList);
     }
-    
-    
-
 });
 
+// Upload a Multiple Images API
+
+
+router.put("/gallery-image/:id",upload.array('images',10), async (req,res)=>{
+
+    if(!mongoose.isValidObjectId(req.params.id))
+        {
+            return res.status(500).json({success:false,message:"Invalid Product Id"});
+        }
+        const imagesPath =[];
+
+     const files = req.files;
+     const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+     if(files)
+     {
+        files.map((file)=>{
+            return imagesPath[`${basePath}/file.filename`];
+        })
+     }
+
+        const product = Product.findByIdAndUpdate(req.params.id,{
+          
+            images:imagesPath
+        },{new:true});
+
+        if(!product)
+            {
+               return res.status(500).json({success:false,message:"Internal Server Error"});
+            }
+            
+            res.status(200).send({success:true,data:product});
+
+});
 
 module.exports = router;
