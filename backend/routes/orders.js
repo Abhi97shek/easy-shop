@@ -126,7 +126,27 @@ router.get("/get/totalsales",async (req,res)=>{
          return res.status(404).send('The order sales cannot be generated');
         }
 res.send({totalsales:totalSales.pop().totalsales});
+});
 
+
+// All the Orders Placed by the Particular User 
+
+
+
+router.get("/get-orders/:userid", async (req,res)=>{
+
+
+    const userOrderList = await Order.find({user:req.params.userid}).populate('user',"name").sort({'dateOrdered':-1})
+    .populate({
+        path:'orderItems',populate:
+        {path:'product',populate:'category'} 
+    })
+    if(!userOrderList)
+        {
+        return res.status(500).json({success:false,message:"Internal Server Error"})
+        }
+
+        res.status(200).send(userOrderList);
 
 });
 
