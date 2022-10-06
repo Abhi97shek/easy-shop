@@ -4,8 +4,7 @@ import React from 'react'
 var {width} = Dimensions.get('window');
 
 const ProductCard = (props) => {
-    const {name,price,image,countInStock} = props
-    console.log(width);
+    const {name,price,image,countInStock} = props;
   return (
     <View style={styles.container}>
       <Image  style={styles.image}

@@ -17,9 +17,8 @@ const ProductList = ({item}) => {
 export default ProductList;
 
 const styles = StyleSheet.create({
-
     listContainer:{
-        width:'100%',
+        width:'50%',
         backgroundColor:'red'
     },
     inner:{
